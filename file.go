@@ -439,7 +439,7 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 			case key.isAutoIncrement:
 				kname = "-"
 			case strings.Contains(kname, "\"") || strings.ContainsAny(kname, f.options.KeyValueDelimiters):
-				kname = "`" + kname + "`"
+				// kname = "`" + kname + "`"
 			case strings.Contains(kname, "`"):
 				kname = `"""` + kname + `"""`
 			}
@@ -462,11 +462,16 @@ func (f *File) writeToBuffer(indent string) (*bytes.Buffer, error) {
 				// In case key value contains "\n", "`", "\"", "#" or ";"
 				if strings.ContainsAny(val, "\n`") {
 					val = `"""` + val + `"""`
-				} else if !f.options.IgnoreInlineComment && strings.ContainsAny(val, "#;") {
-					val = "`" + val + "`"
-				} else if len(strings.TrimSpace(val)) != len(val) {
+				} else {
 					val = `"` + val + `"`
 				}
+				// if strings.ContainsAny(val, "\n`") {
+				// 	val = `"""` + val + `"""`
+				// } else if !f.options.IgnoreInlineComment && strings.ContainsAny(val, "#;") {
+				// 	val = "`" + val + "`"
+				// } else if len(strings.TrimSpace(val)) != len(val) {
+				// 	val = `"` + val + `"`
+				// }
 				if _, err := buf.WriteString(equalSign + val + LineBreak); err != nil {
 					return false, err
 				}
